@@ -1,5 +1,5 @@
 from posts.serializers import PostSerializer
-from rest_framework import generics, mixins, viewsets, permissions, status
+from rest_framework import status, viewsets, permissions
 from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 
@@ -22,12 +22,17 @@ class PostViewSet(viewsets.ModelViewSet):
     def like(self, request, *args, **kwargs):
         snippet = self.get_object()
 
+        good_response= {'details': 'success'}
         if request.method == "PUT":
             snippet.likes.add(self.request.user)
+            return Response(good_response, status=status.HTTP_200_OK)
         elif request.method == "DELETE":
             snippet.likes.remove(self.request.user)
+            return Response(good_response, status=status.HTTP_200_OK)
+        
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({'nice'})
+        
 
 
 @api_view(['GET'])
