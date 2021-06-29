@@ -1,16 +1,19 @@
 from posts.serializers import PostSerializer
-from rest_framework import generics, mixins, viewsets, permissions
-from rest_framework.decorators import action
+from rest_framework import generics, mixins, viewsets, permissions, status
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 
 from .models import Post
-from .serializers import PostSerializer
+from .serializers import LikeSerializer, PostSerializer
+from datetime import date
+import pandas as pd
 
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all().order_by('-post_date')
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    lookup_field = "title"
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -23,6 +26,27 @@ class PostViewSet(viewsets.ModelViewSet):
             snippet.likes.add(self.request.user)
         elif request.method == "DELETE":
             snippet.likes.remove(self.request.user)
-        
+
         return Response({'nice'})
-    
+
+
+@api_view(['GET'])
+def like_count_list(request):
+    if request.method == 'GET':
+        date_from = request.query_params.get('date_from')
+        date_to = request.query_params.get('date_to')
+
+        if not date_from:
+            date_from = date.min
+        if not date_to:
+            date_to = date.max
+
+        queryset = Post.objects.filter(post_date__range=[date_from, date_to])
+        serializer = LikeSerializer(queryset, many=True)
+
+        result = (pd.DataFrame(serializer.data)
+                  .groupby(['post_date'], as_index=False)
+                  .like_count.sum()
+                  .to_dict('r'))
+
+        return Response(result)
