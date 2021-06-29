@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework_simplejwt import authentication
 
 
-class SimpleMiddleware:
+class LastActivityMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 

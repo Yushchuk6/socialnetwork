@@ -8,3 +8,4 @@ class UserViewSet(CreateModelMixin, GenericViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
+    lookup_field = "username"
