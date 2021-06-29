@@ -5,7 +5,8 @@ UserModel = get_user_model()
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+    password = serializers.CharField(
+        style={'input_type': 'password'}, write_only=True)
 
     def create(self, validated_data):
         user = UserModel.objects.create_user(
@@ -17,5 +18,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = UserModel
-        fields = ['username', 'email', 'password']
-        extra_kwargs = {'email': {'required': True}} 
+        fields = ['username', 'email', 'password',
+                  'last_login', 'last_activity']
+        extra_kwargs = {'email': {'required': True}}
