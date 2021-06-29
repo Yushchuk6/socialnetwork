@@ -6,6 +6,7 @@ django
 djangorestframework
 djangorestframework-simplejwt
 pandas
+python-decouple
 ```
 ### API interface:
 ```
