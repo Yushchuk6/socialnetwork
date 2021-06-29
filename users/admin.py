@@ -1,5 +1,16 @@
+from django import forms
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
 from .models import User
+
+
+class UserAdminForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = "__all__"
+
+
+class UserAdmin(admin.ModelAdmin):
+    form = UserAdminForm
+
 
 admin.site.register(User, UserAdmin)
